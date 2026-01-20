@@ -83,9 +83,9 @@ public class Icey {
         Icey.reply("Task marked as not done:", INDENT + task.toString());
     }
 
-    private static Integer parseTaskIndex(String indexStr) throws IceyException {
+    private static int parseTaskIndex(String indexStr) throws IceyException {
         try {
-            Integer index = Integer.parseInt(indexStr) - 1;
+            int index = Integer.parseInt(indexStr) - 1;
             if (index < 0 || index >= tasks.size()) {
                 throw new IceyException("Invalid task number.");
             }
@@ -99,7 +99,7 @@ public class Icey {
         if (parts.length < 2) {
             throw new IceyException("Please specify the task number to mark as done.\nUsage: mark <task number>");
         }
-        Integer index = parseTaskIndex(parts[1]);
+        int index = parseTaskIndex(parts[1]);
         Icey.markTask(index);
     }
 
@@ -107,7 +107,7 @@ public class Icey {
         if (parts.length < 2) {
             throw new IceyException("Please specify the task number to mark as not done.\nUsage: unmark <task number>");
         }
-        Integer index = parseTaskIndex(parts[1]);
+        int index = parseTaskIndex(parts[1]);
         Icey.unmarkTask(index);
     }
 
@@ -146,6 +146,16 @@ public class Icey {
         Icey.addTask(eventTask);
     }
 
+    private static void handleDelete(String[] parts) throws IceyException {
+        if (parts.length < 2) {
+            throw new IceyException("Please specify the task number to delete.\nUsage: delete <task number>");
+        }
+        int index = parseTaskIndex(parts[1]);
+        Task task = tasks.remove(index);
+        Icey.reply("I've removed this task:", INDENT + task.toString(),
+                tasks.size() + " tasks (" + countPendingTasks() + " pending) in the list.");
+    }
+
     public static void main(String[] args) {
         Icey.greetUser();
         // Main interaction loop
@@ -180,6 +190,9 @@ public class Icey {
                         continue;
                     case "event":
                         Icey.handleEvent(parts);
+                        continue;
+                    case "delete":
+                        Icey.handleDelete(parts);
                         continue;
                     default:
                         Icey.reply("Command not recognized.",

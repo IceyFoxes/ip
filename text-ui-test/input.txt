@@ -13,10 +13,20 @@ list
 mark
 mark abc
 mark 1
+mark -10
+mark 10
 list
 unmark
 unmark abc
 unmark 1
+mark -10
+unmark 10
+list
+delete
+delete abc
+delete 1
+delete -10
+delete 10
 list
 bye abc
 bye
