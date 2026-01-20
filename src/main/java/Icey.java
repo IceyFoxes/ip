@@ -22,11 +22,9 @@ public class Icey {
                 "What can I do for you?");
     }
 
-    private static boolean handleExit(String[] parts) {
+    private static boolean handleExit(String[] parts) throws IceyException {
         if (parts.length > 1) {
-            Icey.reply("Bye command does not take any arguments.",
-                    "Usage: bye");
-            return false;
+            throw new IceyException("Bye command does not take any arguments.\nUsage: bye");
         }
         Icey.reply("Bye. Hope to see you again soon!");
         return true;
@@ -48,11 +46,9 @@ public class Icey {
         return pendingTasks;
     }
 
-    private static void handleList(String[] parts) {
+    private static void handleList(String[] parts) throws IceyException {
         if (parts.length > 1) {
-            Icey.reply("List command does not take any arguments.",
-                    "Usage: list");
-            return;
+            throw new IceyException("List command does not take any arguments.\nUsage: list");
         }
         if (tasks.isEmpty()) {
             Icey.reply("No tasks yet!");
@@ -69,107 +65,82 @@ public class Icey {
         Icey.reply(taskLines);
     }
 
-    private static void markTask(int index) {
-        if (index < 0 || index >= tasks.size()) {
-            Icey.reply("Invalid task number.");
-            return;
-        }
+    private static void markTask(int index) throws IceyException {
         Task task = tasks.get(index);
         if (task.isDone()) {
-            Icey.reply("Task is already marked as done.");
-            return;
+            throw new IceyException("Task is already marked as done.");
         }
         task.isDone = true;
         Icey.reply("Task marked as done:", INDENT + task.toString());
     }
 
-    private static void unmarkTask(int index) {
-        if (index < 0 || index >= tasks.size()) {
-            Icey.reply("Invalid task number.");
-            return;
-        }
-
+    private static void unmarkTask(int index) throws IceyException {
         Task task = tasks.get(index);
         if (!task.isDone()) {
-            Icey.reply("Task is already marked as not done.");
-            return;
+            throw new IceyException("Task is already marked as not done.");
         }
         task.isDone = false;
         Icey.reply("Task marked as not done:", INDENT + task.toString());
     }
 
-    private static Integer parseTaskIndex(String indexStr) {
+    private static Integer parseTaskIndex(String indexStr) throws IceyException {
         try {
-            return Integer.parseInt(indexStr) - 1;
+            Integer index = Integer.parseInt(indexStr) - 1;
+            if (index < 0 || index >= tasks.size()) {
+                throw new IceyException("Invalid task number.");
+            }
+            return index;
         } catch (NumberFormatException e) {
-            return null;
+            throw new IceyException("Invalid task number format.");
         }
     }
 
-    private static void handleMark(String[] parts) {
+    private static void handleMark(String[] parts) throws IceyException {
         if (parts.length < 2) {
-            Icey.reply("Please specify the task number to mark as done.",
-                    "Usage: mark <task number>");
-            return;
+            throw new IceyException("Please specify the task number to mark as done.\nUsage: mark <task number>");
         }
         Integer index = parseTaskIndex(parts[1]);
-        if (index == null) {
-            Icey.reply("Invalid task number format.");
-            return;
-        }
         Icey.markTask(index);
     }
 
-    private static void handleUnmark(String[] parts) {
+    private static void handleUnmark(String[] parts) throws IceyException {
         if (parts.length < 2) {
-            Icey.reply("Please specify the task number to mark as not done.",
-                    "Usage: unmark <task number>");
-            return;
+            throw new IceyException("Please specify the task number to mark as not done.\nUsage: unmark <task number>");
         }
         Integer index = parseTaskIndex(parts[1]);
-        if (index == null) {
-            Icey.reply("Invalid task number format.");
-            return;
-        }
         Icey.unmarkTask(index);
     }
 
-    private static void handleTodo(String[] parts) {
+    private static void handleTodo(String[] parts) throws IceyException {
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            Icey.reply("The description of a todo cannot be empty.",
-                    "Usage: todo <description>");
-            return;
+            throw new IceyException("The description of a todo cannot be empty.\nUsage: todo <description>");
         }
         Task todoTask = new Todo(parts[1].trim());
         Icey.addTask(todoTask);
     }
 
-    private static void handleDeadline(String[] parts) {
+    private static void handleDeadline(String[] parts) throws IceyException {
         if (parts.length < 2 || !parts[1].contains(" /by ")) {
-            Icey.reply("Usage: deadline <description> /by <date>");
-            return;
+            throw new IceyException("Usage: deadline <description> /by <date>");
         }
         String[] deadlineParts = parts[1].split(" /by ", 2);
         if (deadlineParts[0].trim().isEmpty() || deadlineParts[1].trim().isEmpty()) {
-            Icey.reply("The description and deadline cannot be empty.",
-                    "Usage: deadline <description> /by <date>");
-            return;
+            throw new IceyException(
+                    "The description and deadline cannot be empty.\nUsage: deadline <description> /by <date>");
         }
         Task deadlineTask = new Deadline(deadlineParts[0].trim(), deadlineParts[1].trim());
         Icey.addTask(deadlineTask);
     }
 
-    private static void handleEvent(String[] parts) {
+    private static void handleEvent(String[] parts) throws IceyException {
         if (parts.length < 2 || !parts[1].contains(" /from ") || !parts[1].contains(" /to ")) {
-            Icey.reply("Usage: event <description> /from <start time> /to <end time>");
-            return;
+            throw new IceyException("Usage: event <description> /from <start time> /to <end time>");
         }
         String[] eventParts1 = parts[1].split(" /from ", 2);
         String[] eventParts2 = eventParts1[1].split(" /to ", 2);
         if (eventParts1[0].trim().isEmpty() || eventParts2[0].trim().isEmpty() || eventParts2[1].trim().isEmpty()) {
-            Icey.reply("The description, start time, and end time cannot be empty.",
-                    "Usage: event <description> /from <start time> /to <end time>");
-            return;
+            throw new IceyException(
+                    "The description, start time, and end time cannot be empty.\nUsage: event <description> /from <start time> /to <end time>");
         }
         Task eventTask = new Event(eventParts1[0].trim(), eventParts2[0].trim(), eventParts2[1].trim());
         Icey.addTask(eventTask);
@@ -179,40 +150,44 @@ public class Icey {
         Icey.greetUser();
         // Main interaction loop
         while (true) {
-            String input = Icey.scanner.nextLine();
-            String[] parts = input.split(" ", 2);
-            // First find the command for the switch case, then each command parses its own
-            // arguments
-            String command = parts[0];
+            try {
+                String input = Icey.scanner.nextLine();
+                String[] parts = input.split(" ", 2);
+                // First find the command for the switch case, then each command parses its own
+                // arguments
+                String command = parts[0];
 
-            switch (command) {
-                case "bye":
-                    if (Icey.handleExit(parts)) {
-                        return;
-                    }
-                    continue;
-                case "list":
-                    Icey.handleList(parts);
-                    continue;
-                case "mark":
-                    Icey.handleMark(parts);
-                    continue;
-                case "unmark":
-                    Icey.handleUnmark(parts);
-                    continue;
-                case "todo":
-                    Icey.handleTodo(parts);
-                    continue;
-                case "deadline":
-                    Icey.handleDeadline(parts);
-                    continue;
-                case "event":
-                    Icey.handleEvent(parts);
-                    continue;
-                default:
-                    Icey.reply("Command not recognized.",
-                            "Available commands: todo, deadline, event, list, mark, unmark, bye");
-                    continue;
+                switch (command) {
+                    case "bye":
+                        if (Icey.handleExit(parts)) {
+                            return;
+                        }
+                        continue;
+                    case "list":
+                        Icey.handleList(parts);
+                        continue;
+                    case "mark":
+                        Icey.handleMark(parts);
+                        continue;
+                    case "unmark":
+                        Icey.handleUnmark(parts);
+                        continue;
+                    case "todo":
+                        Icey.handleTodo(parts);
+                        continue;
+                    case "deadline":
+                        Icey.handleDeadline(parts);
+                        continue;
+                    case "event":
+                        Icey.handleEvent(parts);
+                        continue;
+                    default:
+                        Icey.reply("Command not recognized.",
+                                "Available commands: todo, deadline, event, list, mark, unmark, bye");
+                        continue;
+                }
+            } catch (IceyException e) {
+                Icey.reply(e.getMessage().split("\n"));
             }
         }
     }
