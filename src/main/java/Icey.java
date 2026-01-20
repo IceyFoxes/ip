@@ -22,8 +22,14 @@ public class Icey {
                 "What can I do for you?");
     }
 
-    private static void exit() {
+    private static boolean handleExit(String[] parts) {
+        if (parts.length > 1) {
+            Icey.reply("Bye command does not take any arguments.",
+                    "Usage: bye");
+            return false;
+        }
         Icey.reply("Bye. Hope to see you again soon!");
+        return true;
     }
 
     private static void addTask(Task task) {
@@ -42,7 +48,12 @@ public class Icey {
         return pendingTasks;
     }
 
-    private static void handleList() {
+    private static void handleList(String[] parts) {
+        if (parts.length > 1) {
+            Icey.reply("List command does not take any arguments.",
+                    "Usage: list");
+            return;
+        }
         if (tasks.isEmpty()) {
             Icey.reply("No tasks yet!");
             return;
@@ -176,10 +187,12 @@ public class Icey {
 
             switch (command) {
                 case "bye":
-                    Icey.exit();
-                    break;
+                    if (Icey.handleExit(parts)) {
+                        return;
+                    }
+                    continue;
                 case "list":
-                    Icey.handleList();
+                    Icey.handleList(parts);
                     continue;
                 case "mark":
                     Icey.handleMark(parts);
