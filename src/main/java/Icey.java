@@ -210,8 +210,9 @@ public class Icey {
                     Icey.handleEvent(parts);
                     continue;
                 default:
-                    Task task = new Task(input);
-                    Icey.addTask(task);
+                    Icey.reply("Command not recognized.",
+                            "Available commands: todo, deadline, event, list, mark, unmark, bye");
+                    continue;
             }
         }
     }
