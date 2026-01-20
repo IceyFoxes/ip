@@ -122,6 +122,15 @@ public class Icey {
                         continue;
                     }
                     continue;
+                case "todo":
+                    // TODO
+                    continue;
+                case "deadline":
+                    // TODO
+                    continue;
+                case "event":
+                    // TODO
+                    continue;
                 default:
                     Icey.addTask(input);
             }
