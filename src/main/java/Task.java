@@ -11,11 +11,12 @@ public class Task {
         return (isDone ? "X" : " ");
     }
 
-    public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
-    }
-
     public Boolean isDone() {
         return this.isDone;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + getStatusIcon() + "] " + description;
     }
 }
