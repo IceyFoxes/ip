@@ -1,5 +1,4 @@
 import java.util.Scanner;
-import java.util.ArrayList;
 
 /**
  * Represents the main chatbot application that manages tasks. Supports
@@ -11,7 +10,7 @@ public class Icey {
     private static final String DIVIDER = "─".repeat(60);
     private static final String INDENT = "    ";
     private final Scanner scanner = new Scanner(System.in);
-    private ArrayList<Task> tasks = new ArrayList<>();
+    private TaskList tasks = new TaskList();
 
     // For indentation and future enhancements
     private void reply(String... messages) {
@@ -37,17 +36,11 @@ public class Icey {
     private void addTask(Task task) {
         tasks.add(task);
         reply("I've added Task:", INDENT + task.toString(),
-                tasks.size() + " tasks (" + countPendingTasks() + " pending) in the list.");
+                tasks.getSize() + " tasks (" + countPendingTasks() + " pending) in the list.");
     }
 
     private int countPendingTasks() {
-        int pendingTasks = 0;
-        for (Task task : tasks) {
-            if (!task.isDone()) {
-                pendingTasks++;
-            }
-        }
-        return pendingTasks;
+        return tasks.countPending();
     }
 
     private void handleList(String[] parts) throws IceyException {
@@ -59,10 +52,10 @@ public class Icey {
             return;
         }
 
-        String[] taskLines = new String[tasks.size() + 1];
+        String[] taskLines = new String[tasks.getSize() + 1];
         taskLines[0] = "Here are the tasks:";
 
-        for (int i = 0; i < tasks.size(); i++) {
+        for (int i = 0; i < tasks.getSize(); i++) {
             taskLines[i + 1] = INDENT + (i + 1) + ". " + tasks.get(i);
         }
 
@@ -90,7 +83,7 @@ public class Icey {
     private int parseTaskIndex(String indexStr) throws IceyException {
         try {
             int index = Integer.parseInt(indexStr) - 1;
-            if (index < 0 || index >= tasks.size()) {
+            if (index < 0 || index >= tasks.getSize()) {
                 throw new IceyException("Invalid task number.");
             }
             return index;
@@ -160,7 +153,7 @@ public class Icey {
         int index = parseTaskIndex(parts[1]);
         Task task = tasks.remove(index);
         reply("I've removed this task:", INDENT + task.toString(),
-                tasks.size() + " tasks (" + countPendingTasks() + " pending) in the list.");
+                tasks.getSize() + " tasks (" + countPendingTasks() + " pending) in the list.");
     }
 
     /**
