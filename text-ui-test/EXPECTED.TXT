@@ -12,31 +12,31 @@
     1 tasks (1 pending) in the list.
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
-    Usage: deadline <description> /by <date>
+    Usage: deadline <description> /by <yyyy-MM-dd HHmm>
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
-    Usage: deadline <description> /by <date>
+    Usage: deadline <description> /by <yyyy-MM-dd HHmm>
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
-    Usage: deadline <description> /by <date>
+    Usage: deadline <description> /by <yyyy-MM-dd HHmm>
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
     I've added Task:
-        [D][ ] return book (by: Sunday)
+        [D][ ] return book (by: Dec 02 2019 6:00 PM)
     2 tasks (2 pending) in the list.
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
-    Usage: event <description> /from <start time> /to <end time>
+    Usage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
-    Usage: event <description> /from <start time> /to <end time>
+    Usage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
-    Usage: event <description> /from <start time> /to <end time>
+    Usage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
     I've added Task:
-        [E][ ] project meeting (from: Mon 2pm to: 4pm)
+        [E][ ] project meeting (from: Dec 02 2019 2:00 PM to: Dec 02 2019 4:00 PM)
     3 tasks (3 pending) in the list.
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
@@ -46,8 +46,8 @@
     ────────────────────────────────────────────────────────────
     Here are the tasks:
         1. [T][ ] borrow book
-        2. [D][ ] return book (by: Sunday)
-        3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+        2. [D][ ] return book (by: Dec 02 2019 6:00 PM)
+        3. [E][ ] project meeting (from: Dec 02 2019 2:00 PM to: Dec 02 2019 4:00 PM)
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
     Please specify the task number to mark as done.
@@ -69,8 +69,8 @@
     ────────────────────────────────────────────────────────────
     Here are the tasks:
         1. [T][X] borrow book
-        2. [D][ ] return book (by: Sunday)
-        3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+        2. [D][ ] return book (by: Dec 02 2019 6:00 PM)
+        3. [E][ ] project meeting (from: Dec 02 2019 2:00 PM to: Dec 02 2019 4:00 PM)
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
     Please specify the task number to mark as not done.
@@ -92,8 +92,8 @@
     ────────────────────────────────────────────────────────────
     Here are the tasks:
         1. [T][ ] borrow book
-        2. [D][ ] return book (by: Sunday)
-        3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+        2. [D][ ] return book (by: Dec 02 2019 6:00 PM)
+        3. [E][ ] project meeting (from: Dec 02 2019 2:00 PM to: Dec 02 2019 4:00 PM)
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
     Please specify the task number to delete.
@@ -115,8 +115,8 @@
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
     Here are the tasks:
-        1. [D][ ] return book (by: Sunday)
-        2. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+        1. [D][ ] return book (by: Dec 02 2019 6:00 PM)
+        2. [E][ ] project meeting (from: Dec 02 2019 2:00 PM to: Dec 02 2019 4:00 PM)
     ────────────────────────────────────────────────────────────
     ────────────────────────────────────────────────────────────
     Bye command does not take any arguments.

@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import java.util.List;
  */
 public class Storage {
     private static final String DELIMITER = " | ";
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     private final Path filePath;
 
     /**
@@ -80,11 +83,11 @@ public class Storage {
         if (type.equals(TaskType.TODO.getSymbol())) {
             task = new Todo(description);
         } else if (type.equals(TaskType.DEADLINE.getSymbol())) {
-            String by = parts[3];
+            LocalDateTime by = LocalDateTime.parse(parts[3], DATE_FORMAT);
             task = new Deadline(description, by);
         } else if (type.equals(TaskType.EVENT.getSymbol())) {
-            String from = parts[3];
-            String to = parts[4];
+            LocalDateTime from = LocalDateTime.parse(parts[3], DATE_FORMAT);
+            LocalDateTime to = LocalDateTime.parse(parts[4], DATE_FORMAT);
             task = new Event(description, from, to);
         } else {
             throw new IceyException("Unknown task type: " + type);
@@ -105,11 +108,13 @@ public class Storage {
             return type + DELIMITER + done + DELIMITER + desc;
         } else if (task instanceof Deadline) {
             Deadline d = (Deadline) task;
-            return type + DELIMITER + done + DELIMITER + desc + DELIMITER + d.getBy();
+            String by = d.getBy().format(DATE_FORMAT);
+            return type + DELIMITER + done + DELIMITER + desc + DELIMITER + by;
         } else {
             Event e = (Event) task;
-            return type + DELIMITER + done + DELIMITER + desc + DELIMITER + e.getFrom() + DELIMITER
-                    + e.getTo();
+            String from = e.getFrom().format(DATE_FORMAT);
+            String to = e.getTo().format(DATE_FORMAT);
+            return type + DELIMITER + done + DELIMITER + desc + DELIMITER + from + DELIMITER + to;
         }
     }
 }
