@@ -9,8 +9,10 @@ public class Icey {
     private static final String NAME = "Icey";
     private static final String DIVIDER = "─".repeat(60);
     private static final String INDENT = "    ";
+    private static final String DATA_PATH = "data/icey.txt";
     private final Scanner scanner = new Scanner(System.in);
-    private TaskList tasks = new TaskList();
+    private final Storage storage = new Storage(DATA_PATH);
+    private TaskList tasks;
 
     // For indentation and future enhancements
     private void reply(String... messages) {
@@ -33,8 +35,9 @@ public class Icey {
         return true;
     }
 
-    private void addTask(Task task) {
+    private void addTask(Task task) throws IceyException {
         tasks.add(task);
+        storage.save(tasks);
         reply("I've added Task:", INDENT + task.toString(),
                 tasks.getSize() + " tasks (" + countPendingTasks() + " pending) in the list.");
     }
@@ -68,6 +71,7 @@ public class Icey {
             throw new IceyException("Task is already marked as done.");
         }
         task.isDone = true;
+        storage.save(tasks);
         reply("Task marked as done:", INDENT + task.toString());
     }
 
@@ -77,6 +81,7 @@ public class Icey {
             throw new IceyException("Task is already marked as not done.");
         }
         task.isDone = false;
+        storage.save(tasks);
         reply("Task marked as not done:", INDENT + task.toString());
     }
 
@@ -152,6 +157,7 @@ public class Icey {
         }
         int index = parseTaskIndex(parts[1]);
         Task task = tasks.remove(index);
+        storage.save(tasks);
         reply("I've removed this task:", INDENT + task.toString(),
                 tasks.getSize() + " tasks (" + countPendingTasks() + " pending) in the list.");
     }
@@ -215,6 +221,12 @@ public class Icey {
      */
     public static void main(String[] args) {
         Icey icey = new Icey();
+        try {
+            icey.tasks = icey.storage.load();
+        } catch (IceyException e) {
+            System.out.println("Error loading tasks: " + e.getMessage());
+            icey.tasks = new TaskList();
+        }
         icey.run();
     }
 }

@@ -18,6 +18,14 @@ public class Event extends Task {
         this.by = by;
     }
 
+    public String getFrom() {
+        return this.from;
+    }
+
+    public String getTo() {
+        return this.by;
+    }
+
     @Override
     public String toString() {
         return super.toString() + " (from: " + from + " to: " + by + ")";
