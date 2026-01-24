@@ -1,3 +1,9 @@
+package icey.command;
+
+import icey.Storage;
+import icey.task.TaskList;
+import icey.ui.Ui;
+
 /**
  * Command to exit the application.
  */

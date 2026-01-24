@@ -1,3 +1,5 @@
+package icey.task;
+
 /**
  * Represents a simple task without any time constraints.
  */

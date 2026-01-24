@@ -1,3 +1,5 @@
+package icey;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -5,6 +7,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import icey.task.Deadline;
+import icey.task.Event;
+import icey.task.Task;
+import icey.task.TaskList;
+import icey.task.TaskType;
+import icey.task.Todo;
 
 /**
  * Handles loading and saving tasks to a file.
@@ -94,7 +103,7 @@ public class Storage {
         }
 
         if (isDone) {
-            task.isDone = true;
+            task.markAsDone();
         }
         return task;
     }

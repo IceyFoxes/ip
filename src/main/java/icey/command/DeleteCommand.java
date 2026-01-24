@@ -1,3 +1,11 @@
+package icey.command;
+
+import icey.IceyException;
+import icey.Storage;
+import icey.task.Task;
+import icey.task.TaskList;
+import icey.ui.Ui;
+
 /**
  * Command to delete a task.
  */

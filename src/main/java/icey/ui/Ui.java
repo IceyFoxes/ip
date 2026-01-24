@@ -1,7 +1,10 @@
+package icey.ui;
+
 import java.util.Scanner;
 
 /**
- * Handles all user interface interactions including reading input and displaying output.
+ * Handles all user interface interactions including reading input and
+ * displaying output.
  */
 public class Ui {
     private static final String DIVIDER = "─".repeat(60);

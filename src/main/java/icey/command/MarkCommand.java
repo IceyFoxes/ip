@@ -1,3 +1,11 @@
+package icey.command;
+
+import icey.IceyException;
+import icey.Storage;
+import icey.task.Task;
+import icey.task.TaskList;
+import icey.ui.Ui;
+
 /**
  * Command to mark a task as done.
  */
@@ -17,7 +25,7 @@ public class MarkCommand extends Command {
         if (task.isDone()) {
             throw new IceyException("Task is already marked as done.");
         }
-        task.isDone = true;
+        task.markAsDone();
         storage.save(tasks);
         ui.showMessages("Task marked as done:", ui.getIndent() + task.toString());
     }

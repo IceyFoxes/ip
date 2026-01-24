@@ -1,3 +1,9 @@
+package icey;
+
+import icey.command.Command;
+import icey.task.TaskList;
+import icey.ui.Ui;
+
 /**
  * Represents the main chatbot application that manages tasks. Supports
  * creating, listing, marking, and deleting tasks through a command-line

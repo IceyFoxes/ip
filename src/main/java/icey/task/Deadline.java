@@ -1,3 +1,5 @@
+package icey.task;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -5,8 +7,7 @@ import java.time.format.DateTimeFormatter;
  * Represents a task that needs to be completed by a specific deadline.
  */
 public class Deadline extends Task {
-    private static final DateTimeFormatter OUTPUT_FORMAT =
-            DateTimeFormatter.ofPattern("MMM dd yyyy h:mm a");
+    private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy h:mm a");
     protected LocalDateTime by;
 
     /**

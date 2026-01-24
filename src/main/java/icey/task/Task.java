@@ -1,6 +1,8 @@
+package icey.task;
+
 /**
- * Represents a task with a description and completion status.
- * Serves as the base class for specific task types like Todo, Deadline, and Event.
+ * Represents a task with a description and completion status. Serves as the
+ * base class for specific task types like Todo, Deadline, and Event.
  */
 public class Task {
     protected TaskType type;
@@ -25,6 +27,14 @@ public class Task {
 
     public Boolean isDone() {
         return this.isDone;
+    }
+
+    public void markAsDone() {
+        this.isDone = true;
+    }
+
+    public void markAsNotDone() {
+        this.isDone = false;
     }
 
     public TaskType getType() {

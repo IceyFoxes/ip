@@ -1,6 +1,8 @@
+package icey;
+
 /**
- * Represents an exception specific to the Icey application.
- * Thrown when user input is invalid or a command cannot be executed.
+ * Represents an exception specific to the Icey application. Thrown when user
+ * input is invalid or a command cannot be executed.
  */
 public class IceyException extends Exception {
     /**

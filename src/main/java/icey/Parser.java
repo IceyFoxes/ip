@@ -1,13 +1,26 @@
+package icey;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import icey.command.AddCommand;
+import icey.command.ByeCommand;
+import icey.command.Command;
+import icey.command.DeleteCommand;
+import icey.command.ListCommand;
+import icey.command.MarkCommand;
+import icey.command.UnmarkCommand;
+import icey.task.Deadline;
+import icey.task.Event;
+import icey.task.Task;
+import icey.task.Todo;
 
 /**
  * Handles parsing of user input and commands.
  */
 public class Parser {
-    private static final DateTimeFormatter INPUT_DATE_FORMAT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+    private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
     /**
      * Parses user input and returns the appropriate Command.
@@ -45,7 +58,8 @@ public class Parser {
             return new UnmarkCommand(parseIndex(parts[1]));
         case "delete":
             if (parts.length < 2) {
-                throw new IceyException("Please specify the task number to delete.\nUsage: delete <task number>");
+                throw new IceyException(
+                        "Please specify the task number to delete.\nUsage: delete <task number>");
             }
             return new DeleteCommand(parseIndex(parts[1]));
         case "todo":
@@ -98,7 +112,8 @@ public class Parser {
 
     private static Task parseEvent(String[] parts) throws IceyException {
         if (parts.length < 2 || !parts[1].contains(" /from ") || !parts[1].contains(" /to ")) {
-            throw new IceyException("Usage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
+            throw new IceyException(
+                    "Usage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
         }
         String[] eventParts1 = parts[1].split(" /from ", 2);
         String[] eventParts2 = eventParts1[1].split(" /to ", 2);

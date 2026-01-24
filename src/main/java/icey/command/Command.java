@@ -1,3 +1,10 @@
+package icey.command;
+
+import icey.IceyException;
+import icey.Storage;
+import icey.task.TaskList;
+import icey.ui.Ui;
+
 /**
  * Abstract base class for all commands.
  */
