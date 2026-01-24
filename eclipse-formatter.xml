@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profiles version="1">
+    <profile name="Custom" kind="CodeFormatterProfile" version="21">
+        <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="110"/>
+        <setting id="org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_switch" value="false"/>
+    </profile>
+</profiles>

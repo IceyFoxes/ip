@@ -1,6 +1,11 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 
+/**
+ * Represents the main chatbot application that manages tasks. Supports
+ * creating, listing, marking, and deleting tasks through a command-line
+ * interface.
+ */
 public class Icey {
     private static final String NAME = "Icey";
     private static final String DIVIDER = "─".repeat(60);
@@ -18,8 +23,7 @@ public class Icey {
     }
 
     private void greetUser() {
-        reply("Hello! I'm " + NAME + ".",
-                "What can I do for you?");
+        reply("Hello! I'm " + NAME + ".", "What can I do for you?");
     }
 
     private boolean handleExit(String[] parts) throws IceyException {
@@ -97,7 +101,8 @@ public class Icey {
 
     private void handleMark(String[] parts) throws IceyException {
         if (parts.length < 2) {
-            throw new IceyException("Please specify the task number to mark as done.\nUsage: mark <task number>");
+            throw new IceyException(
+                    "Please specify the task number to mark as done.\nUsage: mark <task number>");
         }
         int index = parseTaskIndex(parts[1]);
         markTask(index);
@@ -105,7 +110,8 @@ public class Icey {
 
     private void handleUnmark(String[] parts) throws IceyException {
         if (parts.length < 2) {
-            throw new IceyException("Please specify the task number to mark as not done.\nUsage: unmark <task number>");
+            throw new IceyException(
+                    "Please specify the task number to mark as not done.\nUsage: unmark <task number>");
         }
         int index = parseTaskIndex(parts[1]);
         unmarkTask(index);
@@ -138,7 +144,8 @@ public class Icey {
         }
         String[] eventParts1 = parts[1].split(" /from ", 2);
         String[] eventParts2 = eventParts1[1].split(" /to ", 2);
-        if (eventParts1[0].trim().isEmpty() || eventParts2[0].trim().isEmpty() || eventParts2[1].trim().isEmpty()) {
+        if (eventParts1[0].trim().isEmpty() || eventParts2[0].trim().isEmpty()
+                || eventParts2[1].trim().isEmpty()) {
             throw new IceyException(
                     "The description, start time, and end time cannot be empty.\nUsage: event <description> /from <start time> /to <end time>");
         }
@@ -156,6 +163,9 @@ public class Icey {
                 tasks.size() + " tasks (" + countPendingTasks() + " pending) in the list.");
     }
 
+    /**
+     * Starts the chatbot and processes user commands in a loop until exit.
+     */
     public void run() {
         greetUser();
         // Main interaction loop
@@ -168,36 +178,36 @@ public class Icey {
                 String command = parts[0];
 
                 switch (command) {
-                    case "bye":
-                        if (handleExit(parts)) {
-                            return;
-                        }
-                        continue;
-                    case "list":
-                        handleList(parts);
-                        continue;
-                    case "mark":
-                        handleMark(parts);
-                        continue;
-                    case "unmark":
-                        handleUnmark(parts);
-                        continue;
-                    case "todo":
-                        handleTodo(parts);
-                        continue;
-                    case "deadline":
-                        handleDeadline(parts);
-                        continue;
-                    case "event":
-                        handleEvent(parts);
-                        continue;
-                    case "delete":
-                        handleDelete(parts);
-                        continue;
-                    default:
-                        reply("Command not recognized.",
-                                "Available commands: todo, deadline, event, list, mark, unmark, bye");
-                        continue;
+                case "bye":
+                    if (handleExit(parts)) {
+                        return;
+                    }
+                    continue;
+                case "list":
+                    handleList(parts);
+                    continue;
+                case "mark":
+                    handleMark(parts);
+                    continue;
+                case "unmark":
+                    handleUnmark(parts);
+                    continue;
+                case "todo":
+                    handleTodo(parts);
+                    continue;
+                case "deadline":
+                    handleDeadline(parts);
+                    continue;
+                case "event":
+                    handleEvent(parts);
+                    continue;
+                case "delete":
+                    handleDelete(parts);
+                    continue;
+                default:
+                    reply("Command not recognized.",
+                            "Available commands: todo, deadline, event, list, mark, unmark, bye");
+                    continue;
                 }
             } catch (IceyException e) {
                 reply(e.getMessage().split("\n"));
@@ -205,6 +215,11 @@ public class Icey {
         }
     }
 
+    /**
+     * Serves as the entry point of the application.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         Icey icey = new Icey();
         icey.run();
