@@ -1,7 +1,6 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Scanner;
 
 /**
  * Represents the main chatbot application that manages tasks. Supports
@@ -10,40 +9,25 @@ import java.util.Scanner;
  */
 public class Icey {
     private static final String NAME = "Icey";
-    private static final String DIVIDER = "─".repeat(60);
-    private static final String INDENT = "    ";
     private static final String DATA_PATH = "data/icey.txt";
     private static final DateTimeFormatter INPUT_DATE_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-    private final Scanner scanner = new Scanner(System.in);
+    private final Ui ui = new Ui();
     private final Storage storage = new Storage(DATA_PATH);
     private TaskList tasks;
-
-    // For indentation and future enhancements
-    private void reply(String... messages) {
-        System.out.println(INDENT + DIVIDER);
-        for (String message : messages) {
-            System.out.println(INDENT + message);
-        }
-        System.out.println(INDENT + DIVIDER);
-    }
-
-    private void greetUser() {
-        reply("Hello! I'm " + NAME + ".", "What can I do for you?");
-    }
 
     private boolean handleExit(String[] parts) throws IceyException {
         if (parts.length > 1) {
             throw new IceyException("Bye command does not take any arguments.\nUsage: bye");
         }
-        reply("Bye. Hope to see you again soon!");
+        ui.showBye();
         return true;
     }
 
     private void addTask(Task task) throws IceyException {
         tasks.add(task);
         storage.save(tasks);
-        reply("I've added Task:", INDENT + task.toString(),
+        ui.showMessages("I've added Task:", ui.getIndent() + task.toString(),
                 tasks.getSize() + " tasks (" + countPendingTasks() + " pending) in the list.");
     }
 
@@ -56,7 +40,7 @@ public class Icey {
             throw new IceyException("List command does not take any arguments.\nUsage: list");
         }
         if (tasks.isEmpty()) {
-            reply("No tasks yet!");
+            ui.showMessages("No tasks yet!");
             return;
         }
 
@@ -64,10 +48,10 @@ public class Icey {
         taskLines[0] = "Here are the tasks:";
 
         for (int i = 0; i < tasks.getSize(); i++) {
-            taskLines[i + 1] = INDENT + (i + 1) + ". " + tasks.get(i);
+            taskLines[i + 1] = ui.getIndent() + (i + 1) + ". " + tasks.get(i);
         }
 
-        reply(taskLines);
+        ui.showMessages(taskLines);
     }
 
     private void markTask(int index) throws IceyException {
@@ -77,7 +61,7 @@ public class Icey {
         }
         task.isDone = true;
         storage.save(tasks);
-        reply("Task marked as done:", INDENT + task.toString());
+        ui.showMessages("Task marked as done:", ui.getIndent() + task.toString());
     }
 
     private void unmarkTask(int index) throws IceyException {
@@ -87,7 +71,7 @@ public class Icey {
         }
         task.isDone = false;
         storage.save(tasks);
-        reply("Task marked as not done:", INDENT + task.toString());
+        ui.showMessages("Task marked as not done:", ui.getIndent() + task.toString());
     }
 
     private int parseTaskIndex(String indexStr) throws IceyException {
@@ -174,7 +158,7 @@ public class Icey {
         int index = parseTaskIndex(parts[1]);
         Task task = tasks.remove(index);
         storage.save(tasks);
-        reply("I've removed this task:", INDENT + task.toString(),
+        ui.showMessages("I've removed this task:", ui.getIndent() + task.toString(),
                 tasks.getSize() + " tasks (" + countPendingTasks() + " pending) in the list.");
     }
 
@@ -182,11 +166,11 @@ public class Icey {
      * Starts the chatbot and processes user commands in a loop until exit.
      */
     public void run() {
-        greetUser();
+        ui.showGreeting(NAME);
         // Main interaction loop
         while (true) {
             try {
-                String input = scanner.nextLine();
+                String input = ui.readCommand();
                 String[] parts = input.split(" ", 2);
                 // First find the command for the switch case,
                 // then each command parses its own arguments
@@ -220,12 +204,12 @@ public class Icey {
                     handleDelete(parts);
                     continue;
                 default:
-                    reply("Command not recognized.",
+                    ui.showMessages("Command not recognized.",
                             "Available commands: todo, deadline, event, list, mark, unmark, bye");
                     continue;
                 }
             } catch (IceyException e) {
-                reply(e.getMessage().split("\n"));
+                ui.showError(e.getMessage());
             }
         }
     }
