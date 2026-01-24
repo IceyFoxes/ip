@@ -10,13 +10,65 @@ public class Parser {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
     /**
-     * Parses a date/time string into a LocalDateTime.
+     * Parses user input and returns the appropriate Command.
      *
-     * @param dateStr The date string in yyyy-MM-dd HHmm format.
-     * @return The parsed LocalDateTime.
-     * @throws IceyException If the date format is invalid.
+     * @param fullCommand The full command string from the user.
+     * @return The Command to execute.
+     * @throws IceyException If the command is invalid.
      */
-    public LocalDateTime parseDateTime(String dateStr) throws IceyException {
+    public static Command parse(String fullCommand) throws IceyException {
+        String[] parts = fullCommand.split(" ", 2);
+        String commandWord = parts[0];
+
+        switch (commandWord) {
+        case "bye":
+            if (parts.length > 1) {
+                throw new IceyException("Bye command does not take any arguments.\nUsage: bye");
+            }
+            return new ByeCommand();
+        case "list":
+            if (parts.length > 1) {
+                throw new IceyException("List command does not take any arguments.\nUsage: list");
+            }
+            return new ListCommand();
+        case "mark":
+            if (parts.length < 2) {
+                throw new IceyException(
+                        "Please specify the task number to mark as done.\nUsage: mark <task number>");
+            }
+            return new MarkCommand(parseIndex(parts[1]));
+        case "unmark":
+            if (parts.length < 2) {
+                throw new IceyException(
+                        "Please specify the task number to mark as not done.\nUsage: unmark <task number>");
+            }
+            return new UnmarkCommand(parseIndex(parts[1]));
+        case "delete":
+            if (parts.length < 2) {
+                throw new IceyException("Please specify the task number to delete.\nUsage: delete <task number>");
+            }
+            return new DeleteCommand(parseIndex(parts[1]));
+        case "todo":
+            return new AddCommand(parseTodo(parts));
+        case "deadline":
+            return new AddCommand(parseDeadline(parts));
+        case "event":
+            return new AddCommand(parseEvent(parts));
+        default:
+            throw new IceyException("Command not recognized.\n"
+                    + "Available commands: todo, deadline, event, list, mark, unmark, delete, bye");
+        }
+    }
+
+    private static int parseIndex(String indexStr) throws IceyException {
+        try {
+            return Integer.parseInt(indexStr) - 1;
+        } catch (NumberFormatException e) {
+            throw new IceyException("Invalid task number format.");
+        }
+    }
+
+    private static LocalDateTime parseDateTime(String dateStr) throws IceyException {
         try {
             return LocalDateTime.parse(dateStr, INPUT_DATE_FORMAT);
         } catch (DateTimeParseException e) {
@@ -24,48 +76,14 @@ public class Parser {
         }
     }
 
-    /**
-     * Parses and validates a task index from user input.
-     *
-     * @param indexStr The index string from user input.
-     * @param listSize The current size of the task list.
-     * @return The zero-based index.
-     * @throws IceyException If the index is invalid.
-     */
-    public int parseTaskIndex(String indexStr, int listSize) throws IceyException {
-        try {
-            int index = Integer.parseInt(indexStr) - 1;
-            if (index < 0 || index >= listSize) {
-                throw new IceyException("Invalid task number.");
-            }
-            return index;
-        } catch (NumberFormatException e) {
-            throw new IceyException("Invalid task number format.");
-        }
-    }
-
-    /**
-     * Parses a todo command and creates a Todo task.
-     *
-     * @param parts The command parts.
-     * @return The created Todo task.
-     * @throws IceyException If the command format is invalid.
-     */
-    public Task parseTodo(String[] parts) throws IceyException {
+    private static Task parseTodo(String[] parts) throws IceyException {
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
             throw new IceyException("The description of a todo cannot be empty.\nUsage: todo <description>");
         }
         return new Todo(parts[1].trim());
     }
 
-    /**
-     * Parses a deadline command and creates a Deadline task.
-     *
-     * @param parts The command parts.
-     * @return The created Deadline task.
-     * @throws IceyException If the command format is invalid.
-     */
-    public Task parseDeadline(String[] parts) throws IceyException {
+    private static Task parseDeadline(String[] parts) throws IceyException {
         if (parts.length < 2 || !parts[1].contains(" /by ")) {
             throw new IceyException("Usage: deadline <description> /by <yyyy-MM-dd HHmm>");
         }
@@ -78,14 +96,7 @@ public class Parser {
         return new Deadline(deadlineParts[0].trim(), by);
     }
 
-    /**
-     * Parses an event command and creates an Event task.
-     *
-     * @param parts The command parts.
-     * @return The created Event task.
-     * @throws IceyException If the command format is invalid.
-     */
-    public Task parseEvent(String[] parts) throws IceyException {
+    private static Task parseEvent(String[] parts) throws IceyException {
         if (parts.length < 2 || !parts[1].contains(" /from ") || !parts[1].contains(" /to ")) {
             throw new IceyException("Usage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
         }
