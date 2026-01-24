@@ -1,7 +1,3 @@
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
 /**
  * Represents the main chatbot application that manages tasks. Supports
  * creating, listing, marking, and deleting tasks through a command-line
@@ -10,10 +6,9 @@ import java.time.format.DateTimeParseException;
 public class Icey {
     private static final String NAME = "Icey";
     private static final String DATA_PATH = "data/icey.txt";
-    private static final DateTimeFormatter INPUT_DATE_FORMAT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
     private final Ui ui = new Ui();
     private final Storage storage = new Storage(DATA_PATH);
+    private final Parser parser = new Parser();
     private TaskList tasks;
 
     private boolean handleExit(String[] parts) throws IceyException {
@@ -74,32 +69,12 @@ public class Icey {
         ui.showMessages("Task marked as not done:", ui.getIndent() + task.toString());
     }
 
-    private int parseTaskIndex(String indexStr) throws IceyException {
-        try {
-            int index = Integer.parseInt(indexStr) - 1;
-            if (index < 0 || index >= tasks.getSize()) {
-                throw new IceyException("Invalid task number.");
-            }
-            return index;
-        } catch (NumberFormatException e) {
-            throw new IceyException("Invalid task number format.");
-        }
-    }
-
-    private LocalDateTime parseDateTime(String dateStr) throws IceyException {
-        try {
-            return LocalDateTime.parse(dateStr, INPUT_DATE_FORMAT);
-        } catch (DateTimeParseException e) {
-            throw new IceyException("Invalid date format. Please use: yyyy-MM-dd HHmm");
-        }
-    }
-
     private void handleMark(String[] parts) throws IceyException {
         if (parts.length < 2) {
             throw new IceyException(
                     "Please specify the task number to mark as done.\nUsage: mark <task number>");
         }
-        int index = parseTaskIndex(parts[1]);
+        int index = parser.parseTaskIndex(parts[1], tasks.getSize());
         markTask(index);
     }
 
@@ -108,46 +83,22 @@ public class Icey {
             throw new IceyException(
                     "Please specify the task number to mark as not done.\nUsage: unmark <task number>");
         }
-        int index = parseTaskIndex(parts[1]);
+        int index = parser.parseTaskIndex(parts[1], tasks.getSize());
         unmarkTask(index);
     }
 
     private void handleTodo(String[] parts) throws IceyException {
-        if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            throw new IceyException("The description of a todo cannot be empty.\nUsage: todo <description>");
-        }
-        Task todoTask = new Todo(parts[1].trim());
+        Task todoTask = parser.parseTodo(parts);
         addTask(todoTask);
     }
 
     private void handleDeadline(String[] parts) throws IceyException {
-        if (parts.length < 2 || !parts[1].contains(" /by ")) {
-            throw new IceyException("Usage: deadline <description> /by <yyyy-MM-dd HHmm>");
-        }
-        String[] deadlineParts = parts[1].split(" /by ", 2);
-        if (deadlineParts[0].trim().isEmpty() || deadlineParts[1].trim().isEmpty()) {
-            throw new IceyException(
-                    "The description and deadline cannot be empty.\nUsage: deadline <description> /by <yyyy-MM-dd HHmm>");
-        }
-        LocalDateTime by = parseDateTime(deadlineParts[1].trim());
-        Task deadlineTask = new Deadline(deadlineParts[0].trim(), by);
+        Task deadlineTask = parser.parseDeadline(parts);
         addTask(deadlineTask);
     }
 
     private void handleEvent(String[] parts) throws IceyException {
-        if (parts.length < 2 || !parts[1].contains(" /from ") || !parts[1].contains(" /to ")) {
-            throw new IceyException("Usage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
-        }
-        String[] eventParts1 = parts[1].split(" /from ", 2);
-        String[] eventParts2 = eventParts1[1].split(" /to ", 2);
-        if (eventParts1[0].trim().isEmpty() || eventParts2[0].trim().isEmpty()
-                || eventParts2[1].trim().isEmpty()) {
-            throw new IceyException(
-                    "The description, start time, and end time cannot be empty.\nUsage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
-        }
-        LocalDateTime from = parseDateTime(eventParts2[0].trim());
-        LocalDateTime to = parseDateTime(eventParts2[1].trim());
-        Task eventTask = new Event(eventParts1[0].trim(), from, to);
+        Task eventTask = parser.parseEvent(parts);
         addTask(eventTask);
     }
 
@@ -155,7 +106,7 @@ public class Icey {
         if (parts.length < 2) {
             throw new IceyException("Please specify the task number to delete.\nUsage: delete <task number>");
         }
-        int index = parseTaskIndex(parts[1]);
+        int index = parser.parseTaskIndex(parts[1], tasks.getSize());
         Task task = tasks.remove(index);
         storage.save(tasks);
         ui.showMessages("I've removed this task:", ui.getIndent() + task.toString(),
