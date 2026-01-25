@@ -8,6 +8,7 @@ import icey.command.AddCommand;
 import icey.command.ByeCommand;
 import icey.command.Command;
 import icey.command.DeleteCommand;
+import icey.command.FindCommand;
 import icey.command.ListCommand;
 import icey.command.MarkCommand;
 import icey.command.UnmarkCommand;
@@ -68,9 +69,14 @@ public class Parser {
             return new AddCommand(parseDeadline(parts));
         case "event":
             return new AddCommand(parseEvent(parts));
+        case "find":
+            if (parts.length < 2 || parts[1].trim().isEmpty()) {
+                throw new IceyException("Please specify a keyword to search.\nUsage: find <keyword>");
+            }
+            return new FindCommand(parts[1].trim());
         default:
             throw new IceyException("Command not recognized.\n"
-                    + "Available commands: todo, deadline, event, list, mark, unmark, delete, bye");
+                    + "Available commands: todo, deadline, event, list, mark, unmark, delete, find, bye");
         }
     }
 
