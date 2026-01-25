@@ -2,6 +2,9 @@ package icey.task;
 
 import java.util.ArrayList;
 
+/**
+ * Manages a collection of tasks with operations for adding, removing, and querying.
+ */
 public class TaskList {
     private ArrayList<Task> tasks = new ArrayList<>();
 
