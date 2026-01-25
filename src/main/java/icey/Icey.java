@@ -41,6 +41,7 @@ public class Icey {
      */
     public static void main(String[] args) {
         Icey icey = new Icey();
+        // Load existing tasks from storage
         try {
             icey.tasks = icey.storage.load();
         } catch (IceyException e) {
