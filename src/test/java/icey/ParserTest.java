@@ -10,6 +10,7 @@ import icey.command.AddCommand;
 import icey.command.ByeCommand;
 import icey.command.Command;
 import icey.command.DeleteCommand;
+import icey.command.FindCommand;
 import icey.command.ListCommand;
 import icey.command.MarkCommand;
 import icey.command.UnmarkCommand;
@@ -68,6 +69,11 @@ public class ParserTest {
     @Test
     public void parse_delete_returnsDeleteCommand() throws IceyException {
         assertInstanceOf(DeleteCommand.class, Parser.parse("delete 1"));
+    }
+
+    @Test
+    public void parse_find_returnsFindCommand() throws IceyException {
+        assertInstanceOf(FindCommand.class, Parser.parse("find book"));
     }
 
     @Test
