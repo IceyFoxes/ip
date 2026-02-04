@@ -109,8 +109,8 @@ public class Parser {
         }
         String[] deadlineParts = parts[1].split(" /by ", 2);
         if (deadlineParts[0].trim().isEmpty() || deadlineParts[1].trim().isEmpty()) {
-            throw new IceyException(
-                    "The description and deadline cannot be empty.\nUsage: deadline <description> /by <yyyy-MM-dd HHmm>");
+            throw new IceyException("The description and deadline cannot be empty.\n"
+                    + "Usage: deadline <description> /by <yyyy-MM-dd HHmm>");
         }
         LocalDateTime by = parseDateTime(deadlineParts[1].trim());
         return new Deadline(deadlineParts[0].trim(), by);
@@ -125,8 +125,8 @@ public class Parser {
         String[] eventParts2 = eventParts1[1].split(" /to ", 2);
         if (eventParts1[0].trim().isEmpty() || eventParts2[0].trim().isEmpty()
                 || eventParts2[1].trim().isEmpty()) {
-            throw new IceyException(
-                    "The description, start time, and end time cannot be empty.\nUsage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
+            throw new IceyException("The description, start time, and end time cannot be empty.\n"
+                    + "Usage: event <description> /from <yyyy-MM-dd HHmm> /to <yyyy-MM-dd HHmm>");
         }
         LocalDateTime from = parseDateTime(eventParts2[0].trim());
         LocalDateTime to = parseDateTime(eventParts2[1].trim());
