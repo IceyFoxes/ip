@@ -1,15 +1,33 @@
 package icey.ui;
 
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 /**
  * Handles all user interface interactions including reading input and
  * displaying output.
  */
 public class Ui {
-    private static final String DIVIDER = "─".repeat(60);
+    private static final String DIVIDER = "─".repeat(30);
     private static final String INDENT = "    ";
     private final Scanner scanner = new Scanner(System.in);
+    private final Consumer<String> out;
+
+    /**
+     * Creates a new Ui instance that outputs to standard output.
+     */
+    public Ui() {
+        this(System.out::println);
+    }
+
+    /**
+     * Creates a new Ui instance with a custom output consumer.
+     *
+     * @param out The consumer that handles output lines.
+     */
+    public Ui(Consumer<String> out) {
+        this.out = out;
+    }
 
     /**
      * Reads a command from the user.
@@ -26,11 +44,11 @@ public class Ui {
      * @param messages The messages to display.
      */
     public void showMessages(String... messages) {
-        System.out.println(INDENT + DIVIDER);
+        out.accept(INDENT + DIVIDER);
         for (String message : messages) {
-            System.out.println(INDENT + message);
+            out.accept(INDENT + message);
         }
-        System.out.println(INDENT + DIVIDER);
+        out.accept(INDENT + DIVIDER);
     }
 
     /**
