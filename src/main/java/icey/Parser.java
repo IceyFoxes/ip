@@ -11,6 +11,7 @@ import icey.command.DeleteCommand;
 import icey.command.FindCommand;
 import icey.command.ListCommand;
 import icey.command.MarkCommand;
+import icey.command.TagCommand;
 import icey.command.UnmarkCommand;
 import icey.task.Deadline;
 import icey.task.Event;
@@ -70,6 +71,8 @@ public class Parser {
             return new AddCommand(parseDeadline(parts));
         case "event":
             return new AddCommand(parseEvent(parts));
+        case "tag":
+            return parseTag(parts);
         case "find":
             if (parts.length < 2 || parts[1].trim().isEmpty()) {
                 throw new IceyException("Please specify a keyword to search.\nUsage: find <keyword>");
@@ -132,5 +135,21 @@ public class Parser {
         LocalDateTime from = parseDateTime(eventParts2[0].trim());
         LocalDateTime to = parseDateTime(eventParts2[1].trim());
         return new Event(eventParts1[0].trim(), from, to);
+    }
+
+    private static Command parseTag(String[] parts) throws IceyException {
+        if (parts.length < 2) {
+            throw new IceyException("Usage: tag <task number> <tag>");
+        }
+        String[] tagParts = parts[1].split(" ", 2);
+        if (tagParts.length < 2 || tagParts[1].trim().isEmpty()) {
+            throw new IceyException("Usage: tag <task number> <tag>");
+        }
+        int index = parseIndex(tagParts[0]);
+        String tag = tagParts[1].trim();
+        if (!tag.startsWith("#")) {
+            tag = "#" + tag;
+        }
+        return new TagCommand(index, tag);
     }
 }
