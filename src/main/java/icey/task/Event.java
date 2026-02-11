@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
  * Represents a task that occurs during a specific time period.
  */
 public class Event extends Task {
-    private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy h:mm a");
     protected LocalDateTime from;
     protected LocalDateTime to;
 
@@ -30,6 +29,12 @@ public class Event extends Task {
 
     public LocalDateTime getTo() {
         return this.to;
+    }
+
+    @Override
+    public String toStorageString(String delimiter, DateTimeFormatter dateFormat) {
+        return super.toStorageString(delimiter, dateFormat)
+                + delimiter + from.format(dateFormat) + delimiter + to.format(dateFormat);
     }
 
     @Override

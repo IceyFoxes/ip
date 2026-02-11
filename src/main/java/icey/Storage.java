@@ -85,7 +85,7 @@ public class Storage {
     private Task parseTask(String line) throws IceyException {
         String[] parts = line.split(" \\| ");
         String type = parts[0];
-        boolean isDone = parts[1].equals("1");
+        boolean isDone = parts[1].equals(Task.DONE_SYMBOL);
         String description = parts[2];
 
         Task task;
@@ -109,21 +109,6 @@ public class Storage {
     }
 
     private String formatTask(Task task) {
-        String type = task.getType().getSymbol();
-        String done = task.isDone() ? "1" : "0";
-        String desc = task.getDescription();
-
-        if (task instanceof Todo) {
-            return type + DELIMITER + done + DELIMITER + desc;
-        } else if (task instanceof Deadline) {
-            Deadline d = (Deadline) task;
-            String by = d.getBy().format(DATE_FORMAT);
-            return type + DELIMITER + done + DELIMITER + desc + DELIMITER + by;
-        } else {
-            Event e = (Event) task;
-            String from = e.getFrom().format(DATE_FORMAT);
-            String to = e.getTo().format(DATE_FORMAT);
-            return type + DELIMITER + done + DELIMITER + desc + DELIMITER + from + DELIMITER + to;
-        }
+        return task.toStorageString(DELIMITER, DATE_FORMAT);
     }
 }

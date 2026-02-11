@@ -2,11 +2,13 @@ package icey.task;
 
 import java.util.ArrayList;
 
+import icey.IceyException;
+
 /**
  * Manages a collection of tasks with operations for adding, removing, and querying.
  */
 public class TaskList {
-    private ArrayList<Task> tasks = new ArrayList<>();
+    private final ArrayList<Task> tasks = new ArrayList<>();
 
     /**
      * Adds a task to the list.
@@ -15,6 +17,18 @@ public class TaskList {
      */
     public void add(Task task) {
         tasks.add(task);
+    }
+
+    /**
+     * Validates that the given index is within bounds.
+     *
+     * @param index The index to validate.
+     * @throws IceyException If the index is out of bounds.
+     */
+    public void validateIndex(int index) throws IceyException {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IceyException("Invalid task number.");
+        }
     }
 
     public Task get(int index) {

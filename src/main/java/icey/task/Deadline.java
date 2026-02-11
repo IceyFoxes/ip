@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
  * Represents a task that needs to be completed by a specific deadline.
  */
 public class Deadline extends Task {
-    private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy h:mm a");
     protected LocalDateTime by;
 
     /**
@@ -23,6 +22,11 @@ public class Deadline extends Task {
 
     public LocalDateTime getBy() {
         return this.by;
+    }
+
+    @Override
+    public String toStorageString(String delimiter, DateTimeFormatter dateFormat) {
+        return super.toStorageString(delimiter, dateFormat) + delimiter + by.format(dateFormat);
     }
 
     @Override

@@ -18,9 +18,7 @@ public class DeleteCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IceyException {
-        if (index < 0 || index >= tasks.getSize()) {
-            throw new IceyException("Invalid task number.");
-        }
+        tasks.validateIndex(index);
         Task task = tasks.remove(index);
         storage.save(tasks);
         int pending = tasks.countPending();
