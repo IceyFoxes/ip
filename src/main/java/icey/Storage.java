@@ -83,7 +83,9 @@ public class Storage {
     }
 
     private Task parseTask(String line) throws IceyException {
+        assert line != null && !line.trim().isEmpty() : "task line should not be null or empty";
         String[] parts = line.split(" \\| ");
+        assert parts.length >= 3 : "task line must have at least 3 fields: " + line;
         String type = parts[0];
         boolean isDone = parts[1].equals(Task.DONE_SYMBOL);
         String description = parts[2];
