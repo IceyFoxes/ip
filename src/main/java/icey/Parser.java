@@ -31,6 +31,7 @@ public class Parser {
      * @throws IceyException If the command is invalid.
      */
     public static Command parse(String fullCommand) throws IceyException {
+        assert fullCommand != null : "fullCommand should not be null";
         String[] parts = fullCommand.split(" ", 2);
         String commandWord = parts[0];
 
