@@ -1,10 +1,15 @@
 package icey.task;
 
+import java.time.format.DateTimeFormatter;
+
 /**
  * Represents a task with a description and completion status. Serves as the
  * base class for specific task types like Todo, Deadline, and Event.
  */
 public class Task {
+    public static final String DONE_SYMBOL = "1";
+    public static final String NOT_DONE_SYMBOL = "0";
+    protected static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy h:mm a");
     protected TaskType type;
     protected String description;
     protected boolean isDone;
@@ -25,7 +30,7 @@ public class Task {
         return (isDone ? "X" : " ");
     }
 
-    public Boolean isDone() {
+    public boolean isDone() {
         return this.isDone;
     }
 
@@ -43,6 +48,18 @@ public class Task {
 
     public String getDescription() {
         return this.description;
+    }
+
+    /**
+     * Returns a formatted string for saving this task to storage.
+     *
+     * @param delimiter The delimiter to use between fields.
+     * @param dateFormat The date format for any date fields.
+     * @return The formatted storage string.
+     */
+    public String toStorageString(String delimiter, DateTimeFormatter dateFormat) {
+        String done = isDone ? DONE_SYMBOL : NOT_DONE_SYMBOL;
+        return type.getSymbol() + delimiter + done + delimiter + description;
     }
 
     @Override

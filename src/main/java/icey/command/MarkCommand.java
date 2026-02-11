@@ -18,9 +18,7 @@ public class MarkCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IceyException {
-        if (index < 0 || index >= tasks.getSize()) {
-            throw new IceyException("Invalid task number.");
-        }
+        tasks.validateIndex(index);
         Task task = tasks.get(index);
         if (task.isDone()) {
             throw new IceyException("Task is already marked as done.");
