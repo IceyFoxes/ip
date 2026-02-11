@@ -1,6 +1,7 @@
 package icey.task;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * Represents a task with a description and completion status. Serves as the
@@ -13,6 +14,7 @@ public class Task {
     protected TaskType type;
     protected String description;
     protected boolean isDone;
+    protected ArrayList<String> tags = new ArrayList<>();
 
     /**
      * Creates a new task with the specified type and description.
@@ -51,6 +53,24 @@ public class Task {
     }
 
     /**
+     * Adds a tag to this task if it doesn't already exist.
+     *
+     * @param tag The tag to add.
+     * @return true if the tag was added, false if it already exists.
+     */
+    public boolean addTag(String tag) {
+        if (tags.contains(tag)) {
+            return false;
+        }
+        tags.add(tag);
+        return true;
+    }
+
+    public ArrayList<String> getTags() {
+        return tags;
+    }
+
+    /**
      * Returns a formatted string for saving this task to storage.
      *
      * @param delimiter The delimiter to use between fields.
@@ -64,6 +84,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "[" + type.getSymbol() + "][" + getStatusIcon() + "] " + description;
+        String tagsStr = tags.isEmpty() ? "" : " " + String.join(" ", tags);
+        return "[" + type.getSymbol() + "][" + getStatusIcon() + "] " + description + tagsStr;
     }
 }

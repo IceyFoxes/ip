@@ -91,15 +91,19 @@ public class Storage {
         String description = parts[2];
 
         Task task;
+        int tagsIndex;
         if (type.equals(TaskType.TODO.getSymbol())) {
             task = new Todo(description);
+            tagsIndex = 3;
         } else if (type.equals(TaskType.DEADLINE.getSymbol())) {
             LocalDateTime by = LocalDateTime.parse(parts[3], DATE_FORMAT);
             task = new Deadline(description, by);
+            tagsIndex = 4;
         } else if (type.equals(TaskType.EVENT.getSymbol())) {
             LocalDateTime from = LocalDateTime.parse(parts[3], DATE_FORMAT);
             LocalDateTime to = LocalDateTime.parse(parts[4], DATE_FORMAT);
             task = new Event(description, from, to);
+            tagsIndex = 5;
         } else {
             throw new IceyException("Unknown task type: " + type);
         }
@@ -107,10 +111,19 @@ public class Storage {
         if (isDone) {
             task.markAsDone();
         }
+        if (parts.length > tagsIndex) {
+            for (String tag : parts[tagsIndex].split(" ")) {
+                task.addTag(tag);
+            }
+        }
         return task;
     }
 
     private String formatTask(Task task) {
-        return task.toStorageString(DELIMITER, DATE_FORMAT);
+        String base = task.toStorageString(DELIMITER, DATE_FORMAT);
+        if (task.getTags().isEmpty()) {
+            return base;
+        }
+        return base + DELIMITER + String.join(" ", task.getTags());
     }
 }

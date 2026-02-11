@@ -13,6 +13,7 @@ import icey.command.DeleteCommand;
 import icey.command.FindCommand;
 import icey.command.ListCommand;
 import icey.command.MarkCommand;
+import icey.command.TagCommand;
 import icey.command.UnmarkCommand;
 
 public class ParserTest {
@@ -79,6 +80,17 @@ public class ParserTest {
     @Test
     public void parse_bye_returnsByeCommand() throws IceyException {
         assertInstanceOf(ByeCommand.class, Parser.parse("bye"));
+    }
+
+    @Test
+    public void parse_tag_returnsTagCommand() throws IceyException {
+        assertInstanceOf(TagCommand.class, Parser.parse("tag 1 #fun"));
+    }
+
+    @Test
+    public void parse_tagMissingArgs_throwsException() {
+        assertThrows(IceyException.class, () -> Parser.parse("tag"));
+        assertThrows(IceyException.class, () -> Parser.parse("tag 1"));
     }
 
     @Test

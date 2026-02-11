@@ -36,6 +36,15 @@ public class TaskTest {
     }
 
     @Test
+    public void addTag_showsInToString() {
+        Todo todo = new Todo("read book");
+        todo.addTag("#fun");
+        assertEquals("[T][ ] read book #fun", todo.toString());
+        todo.addTag("#leisure");
+        assertEquals("[T][ ] read book #fun #leisure", todo.toString());
+    }
+
+    @Test
     public void toString_event_formatsCorrectly() {
         LocalDateTime from = LocalDateTime.of(2019, 12, 2, 14, 0);
         LocalDateTime to = LocalDateTime.of(2019, 12, 2, 16, 0);
