@@ -83,7 +83,9 @@ public class Storage {
     }
 
     private Task parseTask(String line) throws IceyException {
+        assert line != null && !line.trim().isEmpty() : "task line should not be null or empty";
         String[] parts = line.split(" \\| ");
+        assert parts.length >= 3 : "task line must have at least 3 fields: " + line;
         String type = parts[0];
         boolean isDone = parts[1].equals("1");
         String description = parts[2];
@@ -120,6 +122,7 @@ public class Storage {
             String by = d.getBy().format(DATE_FORMAT);
             return type + DELIMITER + done + DELIMITER + desc + DELIMITER + by;
         } else {
+            assert task instanceof Event : "task must be Event if not Todo or Deadline";
             Event e = (Event) task;
             String from = e.getFrom().format(DATE_FORMAT);
             String to = e.getTo().format(DATE_FORMAT);
