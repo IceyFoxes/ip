@@ -25,6 +25,6 @@ public class UnmarkCommand extends Command {
         }
         task.markAsNotDone();
         storage.save(tasks);
-        ui.showMessages("Task marked as not done:", ui.getIndent() + task.toString());
+        ui.showMessages("Task back on the hunt:", ui.getIndent() + task.toString());
     }
 }

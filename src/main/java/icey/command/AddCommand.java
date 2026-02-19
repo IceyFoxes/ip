@@ -21,7 +21,7 @@ public class AddCommand extends Command {
         tasks.add(task);
         storage.save(tasks);
         int pending = tasks.countPending();
-        ui.showMessages("I've added Task:", ui.getIndent() + task.toString(),
-                tasks.getSize() + " tasks (" + pending + " pending) in the list.");
+        ui.showMessages("Fox log updated with:", ui.getIndent() + task.toString(),
+            "Den now holds " + tasks.getSize() + " tasks (" + pending + " pending).");
     }
 }

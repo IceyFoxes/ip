@@ -22,7 +22,9 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
+            scene.getStylesheets().add(Main.class.getResource("/view/icey-theme.css").toExternalForm());
             stage.setScene(scene);
+            stage.setTitle("Icey");
             fxmlLoader.<MainWindow>getController().setIcey(icey);
             stage.show();
         } catch (IOException e) {

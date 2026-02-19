@@ -22,7 +22,7 @@ public class DeleteCommand extends Command {
         Task task = tasks.remove(index);
         storage.save(tasks);
         int pending = tasks.countPending();
-        ui.showMessages("I've removed this task:", ui.getIndent() + task.toString(),
-                tasks.getSize() + " tasks (" + pending + " pending) in the list.");
+        ui.showMessages("Pawed away this task:", ui.getIndent() + task.toString(),
+            "Den now holds " + tasks.getSize() + " tasks (" + pending + " pending).");
     }
 }

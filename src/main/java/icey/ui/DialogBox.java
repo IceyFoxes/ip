@@ -56,7 +56,9 @@ public class DialogBox extends HBox {
      * @return A DialogBox displaying the user's message.
      */
     public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+        DialogBox dialogBox = new DialogBox(text, img);
+        dialogBox.dialog.getStyleClass().add("user-bubble");
+        return dialogBox;
     }
 
     /**
@@ -69,6 +71,7 @@ public class DialogBox extends HBox {
     public static DialogBox getIceyDialog(String text, Image img) {
         var db = new DialogBox(text, img);
         db.flip();
+        db.dialog.getStyleClass().add("icey-bubble");
         return db;
     }
 }

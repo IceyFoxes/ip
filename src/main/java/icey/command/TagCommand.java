@@ -32,6 +32,6 @@ public class TagCommand extends Command {
             throw new IceyException("Task already has tag " + tag + ".");
         }
         storage.save(tasks);
-        ui.showMessages("Tag added:", ui.getIndent() + task.toString());
+        ui.showMessages("Fox tag pinned:", ui.getIndent() + task.toString());
     }
 }

@@ -1,0 +1,45 @@
+#mainWindow {
+    -fx-background-color: linear-gradient(to bottom, #fff7ed, #ffedd5);
+}
+
+#scrollPane {
+    -fx-background-color: transparent;
+}
+
+#scrollPane > .viewport {
+    -fx-background-color: transparent;
+}
+
+#dialogContainer {
+    -fx-background-color: transparent;
+}
+
+#userInputField {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-color: #fdba74;
+    -fx-border-radius: 10;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 13px;
+}
+
+#sendButton {
+    -fx-background-color: #ea580c;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+.label {
+    -fx-padding: 10 12 10 12;
+    -fx-background-radius: 12;
+}
+
+.user-bubble {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1f2937;
+}
+
+.icey-bubble {
+    -fx-background-color: #fb923c;
+    -fx-text-fill: #ffffff;
+}
