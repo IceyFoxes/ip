@@ -8,7 +8,7 @@ import java.util.function.Consumer;
  * displaying output.
  */
 public class Ui {
-    private static final String DIVIDER = "─".repeat(30);
+    private static final String DIVIDER = "─".repeat(25);
     private static final String INDENT = "    ";
     private final Scanner scanner = new Scanner(System.in);
     private final Consumer<String> out;
@@ -57,14 +57,15 @@ public class Ui {
      * @param name The name of the chatbot.
      */
     public void showGreeting(String name) {
-        showMessages("Hello! I'm " + name + ".", "What can I do for you?");
+        showMessages("Yip! I'm " + name + ", your ice fox planner.",
+                "What trail should we track today?");
     }
 
     /**
      * Displays the goodbye message.
      */
     public void showBye() {
-        showMessages("Bye. Hope to see you again soon!");
+        showMessages("Icey the fox is curling up for a nap. See you soon!");
     }
 
     /**

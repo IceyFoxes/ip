@@ -42,7 +42,7 @@ public class Icey {
      */
     public void run() {
         ui.showGreeting(NAME);
-        boolean isExit = false;
+        isExit = false;
         while (!isExit) {
             try {
                 String fullCommand = ui.readCommand();

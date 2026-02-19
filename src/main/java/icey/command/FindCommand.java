@@ -29,10 +29,10 @@ public class FindCommand extends Command {
         }
 
         if (matches.isEmpty()) {
-            ui.showMessages("No matching tasks found.");
+            ui.showMessages("No matching tracks found.");
         } else {
             String[] output = new String[matches.size() + 1];
-            output[0] = "Here are the matching tasks in your list:";
+            output[0] = "I sniffed out these matching tasks:";
             for (int i = 0; i < matches.size(); i++) {
                 output[i + 1] = matches.get(i);
             }

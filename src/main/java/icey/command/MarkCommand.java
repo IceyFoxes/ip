@@ -25,6 +25,6 @@ public class MarkCommand extends Command {
         }
         task.markAsDone();
         storage.save(tasks);
-        ui.showMessages("Task marked as done:", ui.getIndent() + task.toString());
+        ui.showMessages("Caught and completed:", ui.getIndent() + task.toString());
     }
 }
