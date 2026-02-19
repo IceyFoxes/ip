@@ -80,7 +80,7 @@ public class Parser {
             return new FindCommand(parts[1].trim());
         default:
             throw new IceyException("Command not recognized.\n"
-                    + "Available commands: todo, deadline, event, list, mark, unmark, delete, find, bye");
+                    + "Available commands: todo, deadline, event, list, mark, unmark, delete, find, tag, bye");
         }
     }
 
