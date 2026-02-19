@@ -4,6 +4,7 @@ import icey.Icey;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.CacheHint;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -32,6 +33,10 @@ public class MainWindow extends AnchorPane {
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        scrollPane.setFitToWidth(true);
+        dialogContainer.setFillWidth(true);
+        dialogContainer.setCache(true);
+        dialogContainer.setCacheHint(CacheHint.SPEED);
     }
 
     public void setIcey(Icey d) {

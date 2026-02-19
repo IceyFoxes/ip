@@ -19,6 +19,8 @@ import javafx.scene.layout.HBox;
  * and a label containing text from the speaker.
  */
 public class DialogBox extends HBox {
+    private static final double MAX_BUBBLE_WIDTH = 280;
+
     @FXML
     private Label dialog;
     @FXML
@@ -35,6 +37,8 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
+        dialog.setMaxWidth(MAX_BUBBLE_WIDTH);
+        dialog.setPrefWidth(MAX_BUBBLE_WIDTH);
         displayPicture.setImage(img);
     }
 
