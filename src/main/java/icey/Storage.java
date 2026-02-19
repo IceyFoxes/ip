@@ -41,6 +41,7 @@ public class Storage {
      */
     public TaskList load() throws IceyException {
         TaskList tasks = new TaskList();
+        int corruptedLineCount = 0;
 
         try {
             if (!Files.exists(filePath)) {
@@ -50,14 +51,24 @@ public class Storage {
             }
 
             List<String> lines = Files.readAllLines(filePath);
-            for (String line : lines) {
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
                 if (!line.trim().isEmpty()) {
-                    Task task = parseTask(line);
-                    tasks.add(task);
+                    try {
+                        Task task = parseTask(line);
+                        tasks.add(task);
+                    } catch (IceyException | RuntimeException e) {
+                        corruptedLineCount++;
+                    }
                 }
             }
         } catch (IOException e) {
             throw new IceyException("Error loading tasks: " + e.getMessage());
+        }
+
+        if (corruptedLineCount > 0) {
+            System.err.println("Warning: " + corruptedLineCount
+                    + " corrupted task line(s) were skipped while loading data.");
         }
 
         return tasks;
@@ -83,12 +94,23 @@ public class Storage {
     }
 
     private Task parseTask(String line) throws IceyException {
-        assert line != null && !line.trim().isEmpty() : "task line should not be null or empty";
+        if (line == null || line.trim().isEmpty()) {
+            throw new IceyException("Task line cannot be empty.");
+        }
         String[] parts = line.split(" \\| ");
-        assert parts.length >= 3 : "task line must have at least 3 fields: " + line;
+        if (parts.length < 3) {
+            throw new IceyException("Malformed task line: " + line);
+        }
         String type = parts[0];
-        boolean isDone = parts[1].equals(Task.DONE_SYMBOL);
+        String doneSymbol = parts[1];
+        if (!doneSymbol.equals(Task.DONE_SYMBOL) && !doneSymbol.equals(Task.NOT_DONE_SYMBOL)) {
+            throw new IceyException("Invalid done status in task line: " + line);
+        }
+        boolean isDone = doneSymbol.equals(Task.DONE_SYMBOL);
         String description = parts[2];
+        if (description.trim().isEmpty()) {
+            throw new IceyException("Task description cannot be empty.");
+        }
 
         Task task;
         int tagsIndex;
@@ -96,10 +118,16 @@ public class Storage {
             task = new Todo(description);
             tagsIndex = 3;
         } else if (type.equals(TaskType.DEADLINE.getSymbol())) {
+            if (parts.length < 4) {
+                throw new IceyException("Malformed deadline task line: " + line);
+            }
             LocalDateTime by = LocalDateTime.parse(parts[3], DATE_FORMAT);
             task = new Deadline(description, by);
             tagsIndex = 4;
         } else if (type.equals(TaskType.EVENT.getSymbol())) {
+            if (parts.length < 5) {
+                throw new IceyException("Malformed event task line: " + line);
+            }
             LocalDateTime from = LocalDateTime.parse(parts[3], DATE_FORMAT);
             LocalDateTime to = LocalDateTime.parse(parts[4], DATE_FORMAT);
             task = new Event(description, from, to);
@@ -113,7 +141,9 @@ public class Storage {
         }
         if (parts.length > tagsIndex) {
             for (String tag : parts[tagsIndex].split(" ")) {
-                task.addTag(tag);
+                if (!tag.isBlank()) {
+                    task.addTag(tag);
+                }
             }
         }
         return task;
