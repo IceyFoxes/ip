@@ -97,41 +97,56 @@ public class Storage {
         if (line == null || line.trim().isEmpty()) {
             throw new IceyException("Task line cannot be empty.");
         }
-        String[] parts = line.split(" \\| ");
-        if (parts.length < 3) {
-            throw new IceyException("Malformed task line: " + line);
-        }
-        String type = parts[0];
-        String doneSymbol = parts[1];
+        int cursor = 0;
+        String type = readUntilDelimiter(line, cursor);
+        cursor += type.length() + DELIMITER.length();
+
+        String doneSymbol = readUntilDelimiter(line, cursor);
+        cursor += doneSymbol.length() + DELIMITER.length();
+
         if (!doneSymbol.equals(Task.DONE_SYMBOL) && !doneSymbol.equals(Task.NOT_DONE_SYMBOL)) {
             throw new IceyException("Invalid done status in task line: " + line);
         }
         boolean isDone = doneSymbol.equals(Task.DONE_SYMBOL);
-        String description = parts[2];
+
+        LengthPrefixedField descriptionField = readLengthPrefixedField(line, cursor);
+        String description = descriptionField.value;
+        cursor = descriptionField.nextIndex;
+
         if (description.trim().isEmpty()) {
             throw new IceyException("Task description cannot be empty.");
         }
 
         Task task;
-        int tagsIndex;
         if (type.equals(TaskType.TODO.getSymbol())) {
             task = new Todo(description);
-            tagsIndex = 3;
         } else if (type.equals(TaskType.DEADLINE.getSymbol())) {
-            if (parts.length < 4) {
+            if (!hasDelimiterAt(line, cursor)) {
                 throw new IceyException("Malformed deadline task line: " + line);
             }
-            LocalDateTime by = LocalDateTime.parse(parts[3], DATE_FORMAT);
+            cursor += DELIMITER.length();
+            String byText = readUntilDelimiterOrEnd(line, cursor);
+            LocalDateTime by = LocalDateTime.parse(byText, DATE_FORMAT);
+            cursor += byText.length();
             task = new Deadline(description, by);
-            tagsIndex = 4;
         } else if (type.equals(TaskType.EVENT.getSymbol())) {
-            if (parts.length < 5) {
+            if (!hasDelimiterAt(line, cursor)) {
                 throw new IceyException("Malformed event task line: " + line);
             }
-            LocalDateTime from = LocalDateTime.parse(parts[3], DATE_FORMAT);
-            LocalDateTime to = LocalDateTime.parse(parts[4], DATE_FORMAT);
+            cursor += DELIMITER.length();
+            String fromText = readUntilDelimiter(line, cursor);
+            cursor += fromText.length();
+
+            if (!hasDelimiterAt(line, cursor)) {
+                throw new IceyException("Malformed event task line: " + line);
+            }
+            cursor += DELIMITER.length();
+            String toText = readUntilDelimiterOrEnd(line, cursor);
+            cursor += toText.length();
+
+            LocalDateTime from = LocalDateTime.parse(fromText, DATE_FORMAT);
+            LocalDateTime to = LocalDateTime.parse(toText, DATE_FORMAT);
             task = new Event(description, from, to);
-            tagsIndex = 5;
         } else {
             throw new IceyException("Unknown task type: " + type);
         }
@@ -139,21 +154,117 @@ public class Storage {
         if (isDone) {
             task.markAsDone();
         }
-        if (parts.length > tagsIndex) {
-            for (String tag : parts[tagsIndex].split(" ")) {
-                if (!tag.isBlank()) {
-                    task.addTag(tag);
-                }
+        if (hasDelimiterAt(line, cursor)) {
+            cursor += DELIMITER.length();
+            LengthPrefixedField tagsField = readLengthPrefixedField(line, cursor);
+            if (tagsField.nextIndex != line.length()) {
+                throw new IceyException("Malformed trailing data in task line: " + line);
             }
+            for (String tag : parseTagsPayload(tagsField.value)) {
+                task.addTag(tag);
+            }
+        } else if (cursor != line.length()) {
+            throw new IceyException("Malformed trailing data in task line: " + line);
         }
         return task;
     }
 
     private String formatTask(Task task) {
-        String base = task.toStorageString(DELIMITER, DATE_FORMAT);
-        if (task.getTags().isEmpty()) {
-            return base;
+        String base = task.getType().getSymbol()
+                + DELIMITER + (task.isDone() ? Task.DONE_SYMBOL : Task.NOT_DONE_SYMBOL)
+                + DELIMITER + toLengthPrefixed(task.getDescription());
+
+        if (task instanceof Deadline) {
+            base += DELIMITER + ((Deadline) task).getBy().format(DATE_FORMAT);
+        } else if (task instanceof Event) {
+            base += DELIMITER + ((Event) task).getFrom().format(DATE_FORMAT)
+                    + DELIMITER + ((Event) task).getTo().format(DATE_FORMAT);
         }
-        return base + DELIMITER + String.join(" ", task.getTags());
+
+        if (!task.getTags().isEmpty()) {
+            base += DELIMITER + toLengthPrefixed(toTagsPayload(task.getTags()));
+        }
+        return base;
+    }
+
+    private static String toTagsPayload(List<String> tags) {
+        StringBuilder payload = new StringBuilder();
+        for (String tag : tags) {
+            payload.append(toLengthPrefixed(tag));
+        }
+        return payload.toString();
+    }
+
+    private static List<String> parseTagsPayload(String payload) throws IceyException {
+        ArrayList<String> tags = new ArrayList<>();
+        int cursor = 0;
+        while (cursor < payload.length()) {
+            LengthPrefixedField tagField = readLengthPrefixedField(payload, cursor);
+            tags.add(tagField.value);
+            cursor = tagField.nextIndex;
+        }
+        return tags;
+    }
+
+    private static boolean hasDelimiterAt(String line, int index) {
+        return index >= 0 && index + DELIMITER.length() <= line.length()
+                && line.startsWith(DELIMITER, index);
+    }
+
+    private static String readUntilDelimiter(String line, int start) throws IceyException {
+        int delimiterIndex = line.indexOf(DELIMITER, start);
+        if (delimiterIndex < 0) {
+            throw new IceyException("Malformed task line: " + line);
+        }
+        return line.substring(start, delimiterIndex);
+    }
+
+    private static String readUntilDelimiterOrEnd(String line, int start) {
+        int delimiterIndex = line.indexOf(DELIMITER, start);
+        if (delimiterIndex < 0) {
+            return line.substring(start);
+        }
+        return line.substring(start, delimiterIndex);
+    }
+
+    private static String toLengthPrefixed(String value) {
+        return value.length() + ":" + value;
+    }
+
+    private static LengthPrefixedField readLengthPrefixedField(String line, int start) throws IceyException {
+        int colonIndex = line.indexOf(':', start);
+        if (colonIndex < 0) {
+            throw new IceyException("Malformed length-prefixed field: " + line);
+        }
+
+        String lengthText = line.substring(start, colonIndex);
+        int length;
+        try {
+            length = Integer.parseInt(lengthText);
+        } catch (NumberFormatException e) {
+            throw new IceyException("Invalid field length in task line: " + line);
+        }
+
+        if (length < 0) {
+            throw new IceyException("Invalid negative field length in task line: " + line);
+        }
+
+        int valueStart = colonIndex + 1;
+        int valueEnd = valueStart + length;
+        if (valueEnd > line.length()) {
+            throw new IceyException("Field length exceeds line size: " + line);
+        }
+
+        return new LengthPrefixedField(line.substring(valueStart, valueEnd), valueEnd);
+    }
+
+    private static class LengthPrefixedField {
+        private final String value;
+        private final int nextIndex;
+
+        private LengthPrefixedField(String value, int nextIndex) {
+            this.value = value;
+            this.nextIndex = nextIndex;
+        }
     }
 }
